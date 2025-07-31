@@ -1,12 +1,13 @@
 import express from 'express';
 import authRoutes from './routes/auth';
+import { Request, Response } from 'express';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.send('Server is up!');
 });
 
