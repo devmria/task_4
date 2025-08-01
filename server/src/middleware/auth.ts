@@ -6,10 +6,12 @@ import { AuthenticatedRequest } from '../types';
 const prisma = new PrismaClient();
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+  const token = req.cookies?.accessToken;
 
-  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized: No token provided' });
+  }
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string };
     const user = await prisma.user.findUnique({ where: { id: decoded.id } });
