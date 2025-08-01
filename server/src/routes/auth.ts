@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 import { validateBody } from '../middleware/validateBody';
 import { registerSchema } from '../middleware/validationSchema';
+import { authMiddleware } from '../middleware/auth';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -71,17 +72,42 @@ router.post('/login', async (req: Request, res: Response) => {
   }
   const isMatch = await bcrypt.compare(password, user.passwordHash);
   if (!isMatch) {
-    return res.status(401).json({ message: 'Incorrect password' })
+    return res.status(401).json({ message: 'Incorrect password' });
   }
 
   await prisma.user.update({
     where: { id: user.id },
     data: { lastLoginAt: new Date() }
-  })
+  });
 
   const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1d' });
-  res.json({ token })
 
+  res.cookie('accessToken', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000,
+    path: '/'
+  });
+
+  res.status(200).json({
+    message: 'Login successful',
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      status: user.status,
+      lastLoginAt: user.lastLoginAt
+    }
+  });
+});
+
+router.post('/logout', authMiddleware, (req: Request, res: Response) => {
+  res.clearCookie('accessToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    path: '/'
+  });
+  res.status(200).json({ message: 'Logout successful' });
 });
 
 export default router;

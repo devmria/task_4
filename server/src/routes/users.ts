@@ -56,7 +56,7 @@ router.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
 });
 
 
-router.patch('/users/:id/block', authMiddleware, async (req: Request, res: Response) => {
+router.patch('/:id/block', authMiddleware, async (req: Request, res: Response) => {
   const targetUserId = req.params.id;
   const requesterUserId = (req as AuthenticatedRequest).user?.id;
 
@@ -88,5 +88,53 @@ router.patch('/users/:id/block', authMiddleware, async (req: Request, res: Respo
   }
 });
 
+router.patch('/:id/unblock', authMiddleware, async (req: Request, res: Response) => {
+  const targetUserId = req.params.id;
+  const requesterUserId = (req as AuthenticatedRequest).user?.id;
+
+  if (targetUserId === requesterUserId) {
+    return res.status(400).json({ error: 'You cannot unblock yourself' });
+  }
+
+  try {
+    const userToUnblock = await prisma.user.findUnique({ where: { id: targetUserId } });
+
+    if (!userToUnblock) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (userToUnblock.status !== UserStatus.BLOCKED) {
+      return res.status(400).json({ error: 'User is not blocked' });
+    }
+
+    await prisma.user.update({
+      where: { id: targetUserId },
+      data: { status: UserStatus.ACTIVE }
+    });
+
+    res.status(200).json({ message: 'User unblocked successfully' });
+  } catch (error) {
+    console.error('[PATCH /:id/unblock] Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get('/current', authMiddleware, async (req: Request, res: Response) => {
+  const user = (req as AuthenticatedRequest).user;
+
+  if (!user || user.status !== UserStatus.ACTIVE) {
+    return res.status(403).json({ error: 'Access denied: blocked or deleted user' });
+  }
+
+  return res.status(200).json({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    status: user.status,
+    lastLoginAt: user.lastLoginAt,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
+  });
+});
 
 export default router;
