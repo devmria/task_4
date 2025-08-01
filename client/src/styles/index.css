@@ -1,0 +1,34 @@
+@tailwind utilities;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+    font-size: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    display: block;
+    font-size: 1.5rem;
+    width: 100%;
+    height: 100%;
+}
+#app {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+button {
+    cursor: pointer;
+}
+
+@theme {
+  --spacing: 0.1rem;
+  --font-mono: 'TechMono', monospace;
+}

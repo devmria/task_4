@@ -56,7 +56,7 @@ router.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
 });
 
 
-router.patch('/users/:id/block', authMiddleware, async (req: Request, res: Response) => {
+router.patch('/:id/block', authMiddleware, async (req: Request, res: Response) => {
   const targetUserId = req.params.id;
   const requesterUserId = (req as AuthenticatedRequest).user?.id;
 
@@ -87,6 +87,5 @@ router.patch('/users/:id/block', authMiddleware, async (req: Request, res: Respo
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
 
 export default router;
