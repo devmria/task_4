@@ -1,7 +1,5 @@
--- CreateEnum
-CREATE TYPE "public"."UserStatus" AS ENUM ('ACTIVE', 'BLOCKED');
+CREATE TYPE "public"."UserStatus" AS ENUM ('ACTIVE', 'BLOCKED', 'DELETED');
 
--- CreateTable
 CREATE TABLE "public"."User" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -15,5 +13,4 @@ CREATE TABLE "public"."User" (
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
