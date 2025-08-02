@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } catch (error) {
         setUser(null);
         toast.error('You have been blocked or deleted');
-        navigate('/login');
+        console.log('You have been blocked or deleted')
       } finally {
         setLoading(false);
       }

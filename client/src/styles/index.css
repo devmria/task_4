@@ -1,5 +1,3 @@
-@tailwind utilities;
-
 *,
 *::before,
 *::after {
@@ -26,20 +24,4 @@ body {
 
 button {
     cursor: pointer;
-}
-
-@theme {
-  --spacing: 0.1rem;
-  --font-mono: 'TechMono', monospace;
-
-  --color-light: #F5F5F5; 
-  --color-dark: #3F3F3F;  
-
-  --color-base: #8CA1BA; 
-  --color-base_dark: #7591b2; 
-
-  --color-primary_100: #dfdfdf;
-  --color-primary_500: #999999; 
-  
-  --color-error: #C63A0F;
 }
