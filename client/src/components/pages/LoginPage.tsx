@@ -4,8 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AuthService } from 'services/AuthService';
 import { useAuth } from 'context/AuthContext';
-import { InputPrimary } from 'components/atoms/InputPrimary';
-import { ButtonPrimary } from 'components/atoms/ButtonPrimary';
+import { Button, Input } from '@mui/material';
 
 type FormData = {
   email: string;
@@ -29,11 +28,15 @@ export const LoginPage = () => {
   const handleLogin = async (values: FormData) => {
     try {
       const data = await AuthService.login(values.email, values.password);
-      localStorage.setItem('token', data.token);
       setUser(data.user);
-      navigate('/');
-    } catch (error) {
-      toast.error(typeof error === 'string' ? error : 'Login failed');
+      navigate('/dashboard');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Login failed');
+      }
+      console.error("Login error:", error);
     }
   };
 
@@ -48,12 +51,15 @@ export const LoginPage = () => {
           {({ isSubmitting }) => (
             <Form className="flex flex-col gap-m w-300">
               <h1>Login</h1>
-
+              <span>test@example.com </span> 
+              <span>password123 </span>
+              <span>test_01@example.com </span>
+              <span>password123_01 </span>
               <div className="flex flex-col gap-xs">
                 <Field name="email">
                   {({ field, meta }: any) => (
                     <div className="flex flex-col gap-xxs">
-                      <InputPrimary
+                      <Input
                         {...field}
                         type="email"
                         placeholder="E-mail"
@@ -69,7 +75,7 @@ export const LoginPage = () => {
                 <Field name="password">
                   {({ field, meta }: any) => (
                     <div className="flex flex-col gap-xxs">
-                      <InputPrimary
+                      <Input
                         {...field}
                         type="password"
                         placeholder="Password"
@@ -83,9 +89,9 @@ export const LoginPage = () => {
                 </Field>
               </div>
 
-              <ButtonPrimary type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? <span>Logging in...</span> : 'Login'}
-              </ButtonPrimary>
+              </Button>
             </Form>
           )}
         </Formik>
